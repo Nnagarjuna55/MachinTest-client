@@ -33,70 +33,76 @@ export default function Login() {
     }
   }, [navigate]);
 
-  const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
+  const handleSubmit = async (values, { setSubmitting }) => {
     try {
       setLoading(true);
-      console.log('Attempting login with:', values.email); // Debug log
+      console.log('Attempting login with:', values.email);
       
-      const response = await axios.post('http://localhost:5000/api/auth/login', values);
-      console.log('Login response:', response.data); // Debug log
-      
-      const { token, user } = response.data;
-      
-      if (!token || !user) {
-        throw new Error('Invalid response from server');
-      }
+      const loginUrl = 'http://localhost:5000/api/auth/login';
+      console.log('Making request to:', loginUrl);
 
-      // Store auth data
-      localStorage.setItem('token', token);
-      localStorage.setItem('userId', user.id);
-      localStorage.setItem('role', user.role);
-      localStorage.setItem('name', user.name);
-      
-      // Set axios default header
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const response = await axios.post(loginUrl, {
+        email: values.email.toLowerCase(),
+        password: values.password
+      });
 
-      toast.success(`Welcome ${user.name}!`);
-      
-      // Handle different role redirects
-      switch (user.role.toLowerCase()) {
-        case 'admin':
-          navigate('/admin/dashboard');
-          break;
-        case 'ceo':
-          navigate('/ceo/dashboard');
-          break;
-        case 'hr':
-          navigate('/hr/dashboard');
-          break;
-        case 'manager':
-          navigate('/manager/dashboard');
-          break;
-        case 'employee':
-          navigate('/employee/dashboard');
-          break;
-        default:
-          console.error('Unknown role:', user.role);
-          toast.error('Invalid user role');
-          localStorage.clear();
-          break;
-      }
+      console.log('Login response:', response.data);
 
-    } catch (error) {
-      console.error('Login error:', error);
-      
-      if (error.response?.status === 401) {
-        setFieldError('email', 'Invalid email or password');
-        setFieldError('password', 'Invalid email or password');
-        toast.error('Invalid email or password');
+      if (response.data.success) {
+        const { token, user } = response.data;
+        
+        // Check if user object has the required properties
+        if (!user || !user.id || !user.role) {
+          throw new Error('Invalid user data received');
+        }
+
+        // Store user data and token
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('role', user.role.toLowerCase());
+        localStorage.setItem('userId', user.id);
+
+        // Get user's name from the response, with fallback
+        const userName = user.name || user.firstName || 'User';
+        toast.success(`Welcome ${userName}!`);
+        
+        // Role-based navigation
+        const roleRoutes = {
+          admin: '/admin/dashboard',
+          hr: '/hr/dashboard',
+          manager: '/manager/dashboard',
+          ceo: '/ceo/dashboard',
+          employee: '/employee/dashboard'
+        };
+
+        const redirectPath = roleRoutes[user.role.toLowerCase()];
+        if (redirectPath) {
+          navigate(redirectPath);
+        } else {
+          toast.error('Invalid role assigned');
+        }
       } else {
-        toast.error(error.response?.data?.message || 'An error occurred during login');
+        throw new Error(response.data.message || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Login error details:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        url: error.config?.url
+      });
+      
+      let errorMessage = 'Login failed. ';
+      if (error.response?.status === 404) {
+        errorMessage += 'Server endpoint not found. Please check server configuration.';
+      } else {
+        errorMessage += error.response?.data?.message || error.message || 'Please check your credentials.';
       }
       
-      localStorage.clear();
+      toast.error(errorMessage);
     } finally {
-      setLoading(false);
       setSubmitting(false);
+      setLoading(false);
     }
   };
 
@@ -112,13 +118,13 @@ export default function Login() {
                 <Link to="/">
                   <img
                     className="h-12 w-auto"
-                    src="/company-logo.png" // Add your logo file to public folder
+                    src="/Logo.png" // Add your logo file to public folder
                     alt="Company Logo"
                   />
                 </Link>
                 {/* Company Name */}
                 <span className="ml-3 text-xl font-bold text-gray-800">
-                  Your Company Name
+                DEALSDRAY ONLINE PVT. LTD
                 </span>
               </div>
             </div>
@@ -137,13 +143,13 @@ export default function Login() {
           <Formik
             initialValues={{
               email: '',
-              password: ''
+              password: '',
             }}
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
           >
             {({ isSubmitting }) => (
-              <Form className="mt-8 space-y-6">
+              <Form className="mt-8 space-y-6" autoComplete="off">
                 <div className="space-y-4">
                   {/* Email Field */}
                   <div>
@@ -153,7 +159,7 @@ export default function Login() {
                     <Field
                       name="email"
                       type="email"
-                      autoComplete="email"
+                      autoComplete="off"
                       className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                       placeholder="Email address"
                     />
@@ -168,7 +174,7 @@ export default function Login() {
                         id="password"
                         name="password"
                         type={showPassword ? "text" : "password"}
-                        autoComplete="current-password"
+                        autoComplete="new-password"
                         className="appearance-none block w-full pr-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         placeholder="Enter your password"
                       />

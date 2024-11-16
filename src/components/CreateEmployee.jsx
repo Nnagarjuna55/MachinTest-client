@@ -11,7 +11,8 @@ import {
   BriefcaseIcon,
   UserCircleIcon,
   ArrowLeftIcon,
-  LockClosedIcon
+  LockClosedIcon,
+  CalendarIcon
 } from '@heroicons/react/24/outline';
 
 const validationSchema = Yup.object({
@@ -38,7 +39,8 @@ const validationSchema = Yup.object({
     .required('Profile image is required'),
   role: Yup.string()
     .required('Role is required')
-    .oneOf(['employee', 'HR', 'Manager', 'CEO'], 'Invalid role selected'),
+    .oneOf(['employee', 'hr', 'manager', 'ceo'], 'Invalid role selected')
+    .lowercase(),
 });
 
 // Course options array
@@ -57,6 +59,14 @@ const courseOptions = [
   { id: 'mcom', label: 'M.Com', value: 'MCOM' },
   { id: 'ba', label: 'BA', value: 'BA' },
   { id: 'ma', label: 'MA', value: 'MA' }
+];
+
+// Add role options array
+const roleOptions = [
+  { value: 'employee', label: 'Employee' },
+  { value: 'hr', label: 'HR' },
+  { value: 'manager', label: 'Manager' },
+  { value: 'ceo', label: 'CEO' }
 ];
 
 export default function CreateEmployee() {
@@ -90,19 +100,23 @@ export default function CreateEmployee() {
       setSubmitError(null);
       const formData = new FormData();
       
+      // Normalize courses to uppercase and ensure uniqueness
+      const normalizedCourses = [...new Set(values.courses.map(course => course.toUpperCase()))];
+      
+      const normalizedValues = {
+        ...values,
+        role: values.role.toLowerCase(),
+        courses: normalizedCourses // Use normalized courses
+      };
+      
       // Add all form fields to formData
-      Object.keys(values).forEach(key => {
+      Object.keys(normalizedValues).forEach(key => {
         if (key === 'courses') {
-          formData.append(key, JSON.stringify(values[key]));
-        } else if (key === 'image' && values[key]) {
-          formData.append(key, values[key]);
+          normalizedValues[key].forEach(course => formData.append('courses', course));
         } else {
-          formData.append(key, values[key]);
+          formData.append(key, normalizedValues[key]);
         }
       });
-
-      // Add role explicitly
-      formData.append('role', 'employee');
 
       const token = localStorage.getItem('token');
       if (!token) {
@@ -123,24 +137,44 @@ export default function CreateEmployee() {
       );
 
       if (response.data.success) {
-        toast.success('Employee created successfully!');
+        toast.success('Employee created successfully!', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
         navigate('/employee-list');
       }
       
     } catch (error) {
       console.error('Error:', error);
-      const message = error.response?.data?.message || 'Failed to create employee';
+      const errorMessage = error.response?.data?.message || 'Failed to create employee';
       
-      // Check if error is due to authentication
       if (error.response?.status === 401) {
-        toast.error('Session expired. Please login again.');
+        toast.error('Session expired. Please login again.', {
+          position: "top-right",
+          autoClose: 5000,
+        });
         localStorage.clear();
         navigate('/login');
         return;
       }
+
+      if (error.response?.status === 403) {
+        toast.error('You do not have permission to create this role. Only admin can create HR, Manager, or CEO accounts.', {
+          position: "top-right",
+          autoClose: 5000,
+        });
+      } else {
+        toast.error(errorMessage, {
+          position: "top-right",
+          autoClose: 5000,
+        });
+      }
       
-      setSubmitError(message);
-      toast.error(message);
+      setSubmitError(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -180,7 +214,7 @@ export default function CreateEmployee() {
             onSubmit={handleSubmit}
           >
             {({ setFieldValue, isSubmitting, values, errors }) => (
-              <Form className="space-y-8 divide-y divide-gray-200 p-8">
+              <Form className="space-y-8 divide-y divide-gray-200 p-8" autoComplete="off">
                 {/* Show general submission error if any */}
                 {errors.submit && (
                   <div className="rounded-md bg-red-50 p-4 mb-4">
@@ -260,6 +294,7 @@ export default function CreateEmployee() {
                           <Field
                             name="name"
                             type="text"
+                            autoComplete="off"
                             placeholder="Full Name"
                             className="pl-10 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
                           />
@@ -276,6 +311,7 @@ export default function CreateEmployee() {
                           <Field
                             name="email"
                             type="email"
+                            autoComplete="off"
                             placeholder="Email Address"
                             className="pl-10 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
                           />
@@ -292,6 +328,7 @@ export default function CreateEmployee() {
                           <Field
                             name="password"
                             type="password"
+                            autoComplete="new-password"
                             placeholder="Password"
                             className="pl-10 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
                           />
@@ -312,6 +349,7 @@ export default function CreateEmployee() {
                           <Field
                             name="mobile"
                             type="text"
+                            autoComplete="off"
                             placeholder="Mobile Number"
                             className="pl-10 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
                           />
@@ -341,6 +379,7 @@ export default function CreateEmployee() {
                             <option value="Team Lead">Team Lead</option>
                             <option value="Project Manager">Project Manager</option>
                             <option value="Director">Director</option>
+                            <option value="Ceo">CEO</option>
                           </Field>
                         </div>
                         <ErrorMessage name="designation" component="div" className="mt-1 text-sm text-red-600" />
@@ -371,6 +410,22 @@ export default function CreateEmployee() {
                         </div>
                         <ErrorMessage name="gender" component="div" className="mt-1 text-sm text-red-600" />
                       </div>
+
+                      {/* Create Date Field */}
+                      <div className="sm:col-span-3">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Create Date</label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <CalendarIcon className="h-5 w-5 text-gray-400" />
+                          </div>
+                          <Field
+                            name="createDate"
+                            type="date"
+                            className="pl-10 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
+                          />
+                        </div>
+                        <ErrorMessage name="createDate" component="div" className="mt-1 text-sm text-red-600" />
+                      </div>
                     </div>
                   </div>
 
@@ -395,6 +450,14 @@ export default function CreateEmployee() {
                                 name="courses"
                                 value={course.value}
                                 className="form-checkbox text-indigo-600 rounded"
+                                onChange={() => {
+                                  const currentCourses = values.courses;
+                                  if (currentCourses.includes(course.value)) {
+                                    setFieldValue("courses", currentCourses.filter(c => c !== course.value));
+                                  } else {
+                                    setFieldValue("courses", [...currentCourses, course.value]);
+                                  }
+                                }}
                               />
                               <span className="ml-2">{course.label}</span>
                             </label>
@@ -407,6 +470,7 @@ export default function CreateEmployee() {
 
                 {/* Add Role Selection */}
                 <div className="sm:col-span-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <UserCircleIcon className="h-5 w-5 text-gray-400" />
@@ -417,10 +481,11 @@ export default function CreateEmployee() {
                       className="pl-10 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
                     >
                       <option value="">Select Role</option>
-                      <option value="employee">Employee</option>
-                      <option value="HR">HR</option>
-                      <option value="Manager">Manager</option>
-                      <option value="CEO">CEO</option>
+                      {roleOptions.map((role) => (
+                        <option key={role.value} value={role.value}>
+                          {role.label}
+                        </option>
+                      ))}
                     </Field>
                   </div>
                   <ErrorMessage name="role" component="div" className="mt-1 text-sm text-red-600" />

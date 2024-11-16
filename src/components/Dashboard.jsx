@@ -90,12 +90,12 @@ export default function Dashboard() {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <img
-                src="/company-logo.png"
+                src="/Logo.png"
                 alt="Company Logo"
                 className="h-10 w-auto"
               />
               <span className="ml-3 text-xl font-bold text-gray-800">
-                Machine Test
+              DEALSDRAY ONLINE PVT. LTD
               </span>
             </div>
             
@@ -127,7 +127,7 @@ export default function Dashboard() {
               <div className="flex items-center space-x-3">
                 <div className="flex items-center">
                   <img
-                    src="/admin-avatar.png"
+                    src="/Logo.png"
                     alt="Admin"
                     className="h-8 w-8 rounded-full"
                   />
@@ -161,7 +161,7 @@ export default function Dashboard() {
               </div>
               <div className="hidden sm:block">
                 <img
-                  src="/dashboard-welcome.svg"
+                  src="/Logo.png"
                   alt="Welcome"
                   className="h-24 w-auto"
                 />

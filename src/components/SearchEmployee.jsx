@@ -40,6 +40,8 @@ export default function SearchEmployee() {
         }
       });
 
+      console.log('Search results:', response.data);
+
       if (response.data) {
         setSearchResults(response.data);
       } else {

@@ -9,13 +9,17 @@ import {
   EyeIcon,
   ArrowLeftIcon
 } from '@heroicons/react/24/outline';
+import EditEmployee from './EditEmployee';
+import Modal from './Modal';
 
 export default function EmployeeList() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
-  
+
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
@@ -26,7 +30,7 @@ export default function EmployeeList() {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         navigate('/login');
         return;
@@ -42,7 +46,7 @@ export default function EmployeeList() {
       setError(null);
     } catch (error) {
       console.error('Error fetching employees:', error);
-      
+
       if (error.response?.status === 401) {
         localStorage.removeItem('token');
         navigate('/login');
@@ -71,16 +75,16 @@ export default function EmployeeList() {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       // Remove employee from state
       setEmployees(prevEmployees => 
         prevEmployees.filter(employee => employee._id !== id)
       );
-      
+
       toast.success('Employee deleted successfully');
     } catch (error) {
       console.error('Error deleting employee:', error);
-      
+
       if (error.response?.status === 401) {
         localStorage.removeItem('token');
         navigate('/login');
@@ -88,6 +92,16 @@ export default function EmployeeList() {
         toast.error(error.response?.data?.message || 'Error deleting employee');
       }
     }
+  };
+
+  const handleEditClick = (employee) => {
+    setSelectedEmployee(employee);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEmployee(null);
   };
 
   if (loading) {
@@ -132,50 +146,69 @@ export default function EmployeeList() {
         </div>
 
         <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <ul className="divide-y divide-gray-200">
-            {employees.map((employee) => (
-              <li key={employee._id}>
-                <div className="px-4 py-4 flex items-center justify-between sm:px-6">
-                  <div className="flex items-center">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Unique Id</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Image</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Email</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Mobile No</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Designation</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Gender</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Course</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Create Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Action</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {employees.map((employee, index) => (
+                <tr key={employee._id}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-b border-gray-300">{`EMP-${index + 1}`}</td>
+                  <td className="px-6 py-4 whitespace-nowrap border-b border-gray-300">
                     {employee.image && (
                       <img
-                        src={`${API_URL}/uploads/${employee.image}`}
+                        src={`http://localhost:5000/api/uploads/${employee.image}`}
                         alt={employee.name}
-                        className="h-10 w-10 rounded-full mr-4"
+                        className="h-10 w-10 rounded-full"
                       />
                     )}
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900">{employee.name}</h3>
-                      <p className="text-sm text-gray-500">{employee.email}</p>
-                    </div>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Link
-                      to={`/view-employee/${employee._id}`}
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      <EyeIcon className="h-5 w-5" />
-                    </Link>
-                    <Link
-                      to={`/edit-employee/${employee._id}`}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">{employee.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">{employee.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">{employee.mobile}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">{employee.designation}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">{employee.gender}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">
+                    {Array.from(new Set(employee.courses.map(course => course.toUpperCase()))).join(', ')}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">{new Date(employee.createDate).toLocaleDateString()}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">
+                    <button
+                      onClick={() => handleEditClick(employee)}
                       className="text-yellow-600 hover:text-yellow-900"
                     >
                       <PencilIcon className="h-5 w-5" />
-                    </Link>
+                    </button>
                     <button
                       onClick={() => handleDelete(employee._id)}
-                      className="text-red-600 hover:text-red-900 disabled:opacity-50"
-                      disabled={loading}
+                      className="text-red-600 hover:text-red-900 ml-2"
                     >
                       <TrashIcon className="h-5 w-5" />
                     </button>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+        {selectedEmployee && (
+          <EditEmployee employee={selectedEmployee} onClose={handleCloseModal} />
+        )}
+      </Modal>
     </div>
   );
 }
+

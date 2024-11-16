@@ -11,6 +11,8 @@ import HRDashboard from './components/HRDashboard';
 import ManagerDashboard from './components/ManagerDashboard';
 import CEODashboard from './components/CEODashboard';
 import axios from 'axios';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 axios.interceptors.response.use(
   (response) => response,
@@ -26,14 +28,22 @@ axios.interceptors.response.use(
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRole }) => {
   const token = localStorage.getItem('token');
-  const role = localStorage.getItem('role');
+  const role = localStorage.getItem('role')?.toLowerCase();
 
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRole && role !== allowedRole) {
-    return <Navigate to={role === 'admin' ? '/admin/dashboard' : '/employee/dashboard'} replace />;
+  if (allowedRole && role !== allowedRole.toLowerCase()) {
+    // Redirect to appropriate dashboard based on role
+    const roleRoutes = {
+      admin: '/admin/dashboard',
+      employee: '/employee/dashboard',
+      hr: '/hr/dashboard',
+      manager: '/manager/dashboard',
+      ceo: '/ceo/dashboard'
+    };
+    return <Navigate to={roleRoutes[role] || '/login'} replace />;
   }
 
   return children;
@@ -45,79 +55,89 @@ function App() {
       <Routes>
         {/* Public Route */}
         <Route path="/login" element={<Login />} />
-        {/* Protected Employee Routes */}
-        <Route
-          path="/employee/dashboard"
-          element={
-            <ProtectedRoute allowedRole="employee">
-              <EmployeeDashboard />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Protected Admin Routes */}
         <Route
-          path="/admin/dashboard"
+          path="/admin/*"
           element={
             <ProtectedRoute allowedRole="admin">
-              <Dashboard />
+              <Routes>
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="create-employee" element={<CreateEmployee />} />
+                <Route path="employee-list" element={<EmployeeList />} />
+                <Route path="search-employee" element={<SearchEmployee />} />
+                <Route path="edit-employee/:id" element={<EditEmployee />} />
+              </Routes>
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/admin/create-employee"
-          element={
-            <ProtectedRoute allowedRole="admin">
-              <CreateEmployee />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/employee-list"
-          element={
-            <ProtectedRoute allowedRole="admin">
-              <EmployeeList />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/search-employee"
-          element={
-            <ProtectedRoute allowedRole="admin">
-              <SearchEmployee />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/edit-employee/:id"
-          element={
-            <ProtectedRoute allowedRole="admin">
-              <EditEmployee />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/admin/employee/edit/:id" element={<EditEmployee />} />
 
-        {/* Reset Password Route */}
-        <Route path="/reset-password" element={<ResetPassword />} />
+        {/* Protected HR Routes */}
+        <Route
+          path="/hr/*"
+          element={
+            <ProtectedRoute allowedRole="hr">
+              <Routes>
+                <Route path="dashboard" element={<HRDashboard />} />
+                <Route path="create-employee" element={<CreateEmployee />} />
+                <Route path="employee-list" element={<EmployeeList />} />
+              </Routes>
+            </ProtectedRoute>
+          }
+        />
 
-        {/* HR Dashboard Route */}
-        <Route path="/hr/dashboard" element={<HRDashboard />} />
+        {/* Protected Manager Routes */}
+        <Route
+          path="/manager/*"
+          element={
+            <ProtectedRoute allowedRole="manager">
+              <Routes>
+                <Route path="dashboard" element={<ManagerDashboard />} />
+                <Route path="team" element={<EmployeeList />} />
+              </Routes>
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Manager Dashboard Route */}
-        <Route path="/manager/dashboard" element={<ManagerDashboard />} />
+        {/* Protected CEO Routes */}
+        <Route
+          path="/ceo/*"
+          element={
+            <ProtectedRoute allowedRole="ceo">
+              <Routes>
+                <Route path="dashboard" element={<CEODashboard />} />
+              </Routes>
+            </ProtectedRoute>
+          }
+        />
 
-        {/* CEO Dashboard Route */}
-        <Route path="/ceo/dashboard" element={<CEODashboard />} />
+        {/* Protected Employee Routes */}
+        <Route
+          path="/employee/*"
+          element={
+            <ProtectedRoute allowedRole="employee">
+              <Routes>
+                <Route path="dashboard" element={<EmployeeDashboard />} />
+              </Routes>
+            </ProtectedRoute>
+          }
+        />
 
         {/* Default Route */}
-        <Route
-          path="*"
-          element={
-            <Navigate to="/login" replace />
-          }
-        />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </Router>
   );
 }
