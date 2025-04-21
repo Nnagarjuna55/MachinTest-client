@@ -75,7 +75,7 @@ const ProfileSection = ({ employeeData, updateEmployeeData }) => {
           <div className="flex-shrink-0">
             {employeeData?.image ? (
               <img
-                src={employeeData.image}
+                src={`http://localhost:5000/api/uploads/${employeeData.image}`}
                 alt={employeeData.name}
                 className="h-24 w-24 rounded-full object-cover"
               />

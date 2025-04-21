@@ -121,7 +121,7 @@ export default function SearchEmployee() {
                       <div className="flex items-center space-x-4">
                         {employee.image ? (
                           <img
-                            src={`http://localhost:5000/uploads/${employee.image}`}
+                            src={`http://localhost:5000/api/uploads/${employee.image}`}
                             alt={employee.name}
                             className="h-12 w-12 rounded-full object-cover"
                           />

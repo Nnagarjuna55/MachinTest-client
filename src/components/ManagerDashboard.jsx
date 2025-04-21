@@ -45,7 +45,7 @@ const handleApiError = (error, message) => {
 
 export default function ManagerDashboard() {
   const navigate = useNavigate();
-  
+
   // All state declarations
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -78,77 +78,77 @@ export default function ManagerDashboard() {
 
   // Sidebar Navigation Items
   const sidebarNavigation = [
-    { 
+    {
       name: 'Dashboard',
-      icon: ChartBarIcon, 
+      icon: ChartBarIcon,
       section: 'dashboard',
-      badge: null 
+      badge: null
     },
-    { 
-      name: 'Team Management', 
-      icon: UserGroupIcon, 
+    {
+      name: 'Team Management',
+      icon: UserGroupIcon,
       section: 'team',
       badge: teamMembers?.length || null
     },
-    { 
-      name: 'Projects & Tasks', 
-      icon: BriefcaseIcon, 
+    {
+      name: 'Projects & Tasks',
+      icon: BriefcaseIcon,
       section: 'projects',
       badge: tasks?.filter(t => t.status === 'pending').length || null
     },
-    { 
-      name: 'Attendance', 
-      icon: CalendarIcon, 
+    {
+      name: 'Attendance',
+      icon: CalendarIcon,
       section: 'attendance',
-      badge: null 
+      badge: null
     },
-    { 
-      name: 'Leave Management', 
-      icon: ClipboardDocumentListIcon, 
+    {
+      name: 'Leave Management',
+      icon: ClipboardDocumentListIcon,
       section: 'leave',
       badge: leaveRequests?.filter(l => l.status === 'pending').length || null
     },
-    { 
-      name: 'Performance Reviews', 
-      icon: ChartBarIcon, 
+    {
+      name: 'Performance Reviews',
+      icon: ChartBarIcon,
       section: 'performance',
-      badge: null 
+      badge: null
     },
-    { 
-      name: 'Training Management', 
-      icon: AcademicCapIcon, 
+    {
+      name: 'Training Management',
+      icon: AcademicCapIcon,
       section: 'training',
-      badge: null 
+      badge: null
     },
-    { 
-      name: 'Reports', 
-      icon: DocumentTextIcon, 
+    {
+      name: 'Reports',
+      icon: DocumentTextIcon,
       section: 'reports',
-      badge: null 
+      badge: null
     },
-    { 
-      name: 'Payroll', 
-      icon: CurrencyDollarIcon, 
+    {
+      name: 'Payroll',
+      icon: CurrencyDollarIcon,
       section: 'payroll',
-      badge: null 
+      badge: null
     },
-    { 
-      name: 'Communication', 
-      icon: ChatBubbleLeftIcon, 
+    {
+      name: 'Communication',
+      icon: ChatBubbleLeftIcon,
       section: 'communication',
-      badge: null 
+      badge: null
     },
-    { 
-      name: 'Company', 
-      icon: BuildingOfficeIcon, 
+    {
+      name: 'Company',
+      icon: BuildingOfficeIcon,
       section: 'company',
-      badge: null 
+      badge: null
     },
-    { 
-      name: 'Settings', 
-      icon: CogIcon, 
+    {
+      name: 'Settings',
+      icon: CogIcon,
       section: 'settings',
-      badge: null 
+      badge: null
     }
   ];
 
@@ -197,21 +197,21 @@ export default function ManagerDashboard() {
 
         // Update states with data or defaults
         setEmployeeData(employeeResponse.status === 'fulfilled' ? employeeResponse.value.data : null);
-        
+
         setTeamMembers(
           teamResponse.status === 'fulfilled' ? teamResponse.value.data?.teamMembers || [] : []
         );
-        
+
         setLeaveRequests(
           leaveResponse.status === 'fulfilled' ? leaveResponse.value.data || [] : []
         );
-        
+
         setTeamPerformance(
-          performanceResponse.status === 'fulfilled' 
-            ? performanceResponse.value.data 
+          performanceResponse.status === 'fulfilled'
+            ? performanceResponse.value.data
             : { overview: { averageRating: 0 }, metrics: [], trends: [] }
         );
-        
+
         setDepartmentStats(
           departmentResponse.status === 'fulfilled' ? departmentResponse.value.data : { budget: 0 }
         );
@@ -226,7 +226,7 @@ export default function ManagerDashboard() {
 
         // Update pending approvals
         setPendingApprovals({
-          leaves: leaveResponse.status === 'fulfilled' 
+          leaves: leaveResponse.status === 'fulfilled'
             ? leaveResponse.value.data?.filter(l => l.status === 'pending') || []
             : [],
           expenses: [],
@@ -264,39 +264,30 @@ export default function ManagerDashboard() {
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <div className="hidden md:flex md:flex-shrink-0">
-        <div className="flex flex-col w-64">
-          <div className="flex flex-col h-0 flex-1 bg-gray-800">
-            <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-              <div className="flex items-center flex-shrink-0 px-4">
-                <img
-                  className="h-8 w-auto"
-                  src="/logo.png"
-                  alt="Company Logo"
-                />
-              </div>
-              <nav className="mt-5 flex-1 px-2 space-y-1">
-                {sidebarNavigation.map((item) => (
-                  <button
-                    key={item.section}
-                    onClick={() => setActiveSection(item.section)}
-                    className={`${
-                      activeSection === item.section
-                        ? 'bg-gray-900 text-white'
-                        : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                    } group flex items-center px-2 py-2 text-sm font-medium rounded-md w-full`}
-                  >
-                    <item.icon className="mr-3 h-6 w-6" />
-                    {item.name}
-                    {item.badge && (
-                      <span className="ml-auto bg-gray-900 text-gray-300 py-0.5 px-2 rounded-full text-xs">
-                        {item.badge}
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </nav>
-            </div>
+        <div className="flex flex-col w-72 bg-gray-50 shadow-lg">
+          <div className="flex items-center justify-center h-16 px-4 border-b border-gray-200">
+            <img src="/NSTechno.png" alt="Company Logo" className="h-8" />
           </div>
+          <nav className="mt-5 flex-1 px-2 space-y-1">
+            {sidebarNavigation.map((item) => (
+              <button
+                key={item.section}
+                onClick={() => setActiveSection(item.section)}
+                className={`${activeSection === item.section
+                    ? 'bg-indigo-50 text-indigo-600'
+                    : 'text-gray-700 hover:bg-gray-50'
+                  } group flex items-center px-2 py-2 text-sm font-medium rounded-md w-full`}
+              >
+                <item.icon className="mr-3 h-6 w-6" />
+                {item.name}
+                {item.badge && (
+                  <span className="ml-auto bg-indigo-100 text-indigo-600 px-2 py-1 rounded-full text-xs">
+                    {item.badge}
+                  </span>
+                )}
+              </button>
+            ))}
+          </nav>
         </div>
       </div>
 
@@ -312,7 +303,7 @@ export default function ManagerDashboard() {
               <button className="p-2 text-gray-400 hover:text-gray-500">
                 <BellIcon className="h-6 w-6" />
               </button>
-              <button 
+              <button
                 onClick={handleLogout}
                 className="flex items-center text-gray-700 hover:text-gray-900"
               >
@@ -326,49 +317,49 @@ export default function ManagerDashboard() {
         {/* Dynamic Content Area */}
         <main className="p-6">
           {activeSection === 'dashboard' && (
-            <ManagerDashboardOverview 
-              stats={stats} 
-              teamPerformance={teamPerformance} 
-              pendingApprovals={pendingApprovals} 
+            <ManagerDashboardOverview
+              stats={stats}
+              teamPerformance={teamPerformance}
+              pendingApprovals={pendingApprovals}
             />
           )}
           {activeSection === 'team' && (
-            <TeamManagement 
+            <TeamManagement
               teamMembers={teamMembers}
               departmentStats={departmentStats}
             />
           )}
           {activeSection === 'projects' && (
-            <ProjectsAndTasks 
+            <ProjectsAndTasks
               tasks={tasks}
               teamMembers={teamMembers}
             />
           )}
           {activeSection === 'attendance' && (
-            <AttendanceManagement 
+            <AttendanceManagement
               attendance={attendance}
               teamMembers={teamMembers}
             />
           )}
           {activeSection === 'leave' && (
-            <LeaveManagement 
+            <LeaveManagement
               leaveRequests={leaveRequests}
               teamMembers={teamMembers}
             />
           )}
           {activeSection === 'performance' && (
-            <PerformanceReviews 
+            <PerformanceReviews
               teamMembers={teamMembers}
               teamPerformance={teamPerformance}
             />
           )}
           {activeSection === 'training' && (
-            <TrainingManagement 
+            <TrainingManagement
               teamMembers={teamMembers}
             />
           )}
           {activeSection === 'reports' && (
-            <Reports 
+            <Reports
               stats={stats}
               teamMembers={teamMembers}
               attendance={attendance}
@@ -376,13 +367,13 @@ export default function ManagerDashboard() {
             />
           )}
           {activeSection === 'payroll' && (
-            <PayrollManagement 
+            <PayrollManagement
               teamMembers={teamMembers}
               departmentStats={departmentStats}
             />
           )}
           {activeSection === 'communication' && (
-            <Communication 
+            <Communication
               teamMembers={teamMembers}
             />
           )}

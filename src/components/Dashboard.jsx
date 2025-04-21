@@ -90,32 +90,32 @@ export default function Dashboard() {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <img
-                src="/Logo.png"
+                src="/NSTechno.png"
                 alt="Company Logo"
                 className="h-10 w-auto"
               />
               <span className="ml-3 text-xl font-bold text-gray-800">
-              DEALSDRAY ONLINE PVT. LTD
+                NS TECHNO.
               </span>
             </div>
-            
+
             <div className="flex items-center space-x-6">
               <div className="hidden md:flex space-x-4">
-                <Link 
+                <Link
                   to="/admin/create-employee"
                   className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
                 >
                   <PlusCircleIcon className="h-5 w-5 mr-1" />
                   Create Employee
                 </Link>
-                <Link 
+                <Link
                   to="/admin/employee-list"
                   className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
                 >
                   <ClipboardDocumentListIcon className="h-5 w-5 mr-1" />
                   Employee List
                 </Link>
-                <Link 
+                <Link
                   to="/admin/search-employee"
                   className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
                 >
@@ -123,11 +123,11 @@ export default function Dashboard() {
                   Search
                 </Link>
               </div>
-              
+
               <div className="flex items-center space-x-3">
                 <div className="flex items-center">
                   <img
-                    src="/Logo.png"
+                    src="/NSTechno.png"
                     alt="Admin"
                     className="h-8 w-8 rounded-full"
                   />
@@ -161,7 +161,7 @@ export default function Dashboard() {
               </div>
               <div className="hidden sm:block">
                 <img
-                  src="/Logo.png"
+                  src="/NSTechno.png"
                   alt="Welcome"
                   className="h-24 w-auto"
                 />
@@ -212,7 +212,7 @@ export default function Dashboard() {
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
           Organization Statistics
         </h2>
-        
+
         {/* Summary Cards */}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {/* Total Employees */}

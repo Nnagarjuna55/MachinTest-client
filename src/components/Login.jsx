@@ -23,7 +23,7 @@ export default function Login() {
     // Check if user is already logged in
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
-    
+
     if (token) {
       if (role === 'admin') {
         navigate('/admin/dashboard', { replace: true });
@@ -37,7 +37,7 @@ export default function Login() {
     try {
       setLoading(true);
       console.log('Attempting login with:', values.email);
-      
+
       const loginUrl = 'http://localhost:5000/api/auth/login';
       console.log('Making request to:', loginUrl);
 
@@ -50,7 +50,7 @@ export default function Login() {
 
       if (response.data.success) {
         const { token, user } = response.data;
-        
+
         // Check if user object has the required properties
         if (!user || !user.id || !user.role) {
           throw new Error('Invalid user data received');
@@ -65,7 +65,7 @@ export default function Login() {
         // Get user's name from the response, with fallback
         const userName = user.name || user.firstName || 'User';
         toast.success(`Welcome ${userName}!`);
-        
+
         // Role-based navigation
         const roleRoutes = {
           admin: '/admin/dashboard',
@@ -91,14 +91,14 @@ export default function Login() {
         data: error.response?.data,
         url: error.config?.url
       });
-      
+
       let errorMessage = 'Login failed. ';
       if (error.response?.status === 404) {
         errorMessage += 'Server endpoint not found. Please check server configuration.';
       } else {
         errorMessage += error.response?.data?.message || error.message || 'Please check your credentials.';
       }
-      
+
       toast.error(errorMessage);
     } finally {
       setSubmitting(false);
@@ -118,13 +118,13 @@ export default function Login() {
                 <Link to="/">
                   <img
                     className="h-12 w-auto"
-                    src="/Logo.png" // Add your logo file to public folder
+                    src="/NSTechno.png" // Add your logo file to public folder
                     alt="Company Logo"
                   />
                 </Link>
                 {/* Company Name */}
                 <span className="ml-3 text-xl font-bold text-gray-800">
-                DEALSDRAY ONLINE PVT. LTD
+                  NS TECHNO.
                 </span>
               </div>
             </div>
@@ -200,9 +200,8 @@ export default function Login() {
                   <button
                     type="submit"
                     disabled={isSubmitting || loading}
-                    className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-                      (isSubmitting || loading) ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
+                    className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${(isSubmitting || loading) ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
                   >
                     {loading ? 'Signing in...' : 'Sign in'}
                   </button>

@@ -3,16 +3,14 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import {
   PlusIcon,
-  ChevronDownIcon,
-  CheckCircleIcon,
   ClockIcon,
-  XCircleIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
 
-const API_URL = 'http://localhost:5000';
+// Use environment variable for API URL
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-// Move DUMMY_PROJECTS outside component
+// Dummy projects for initial state
 const DUMMY_PROJECTS = [
   { _id: '1', name: 'Website Development' },
   { _id: '2', name: 'Mobile App' },
@@ -28,7 +26,7 @@ const TasksSection = () => {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Update the fetchData function to only fetch tasks
+  // Fetch tasks and projects
   useEffect(() => {
     const fetchTasks = async () => {
       setIsLoading(true);
@@ -58,11 +56,11 @@ const TasksSection = () => {
         setIsLoading(false);
       }
     };
-    
+
     fetchTasks();
   }, []);
 
-  // Update the handleSubmit function in NewTaskModal
+  // Create a new task
   const handleCreateTask = async (taskData) => {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
@@ -83,7 +81,7 @@ const TasksSection = () => {
           }
         }
       );
-      
+
       setTasks([...tasks, response.data]);
       setShowNewTaskModal(false);
       toast.success('Task created successfully');
@@ -103,10 +101,10 @@ const TasksSection = () => {
   // Update task status
   const handleStatusUpdate = async (taskId, newStatus) => {
     const token = localStorage.getItem('token');
-    
+
     try {
       await axios.patch(
-        `${API_URL}/api/tasks/${taskId}`, 
+        `${API_URL}/api/tasks/${taskId}`,
         { status: newStatus },
         {
           headers: {

@@ -146,26 +146,26 @@ export default function EmployeeList() {
         </div>
 
         <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full divide-y divide-gray-200 border border-gray-300">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Unique Id</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Image</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Mobile No</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Designation</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Gender</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Course</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Create Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300 border-r border-gray-300">Unique Id</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300 border-r border-gray-300">Image</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300 border-r border-gray-300">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300 border-r border-gray-300">Email</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300 border-r border-gray-300">Mobile No</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300 border-r border-gray-300">Designation</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300 border-r border-gray-300">Gender</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300 border-r border-gray-300">Course</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300 border-r border-gray-300">Create Date</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Action</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {employees.map((employee, index) => (
-                <tr key={employee._id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-b border-gray-300">{`EMP-${index + 1}`}</td>
-                  <td className="px-6 py-4 whitespace-nowrap border-b border-gray-300">
+                <tr key={employee._id} className="border-b border-gray-300">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-b border-gray-300 border-r border-gray-300">{`EMP-${index + 1}`}</td>
+                  <td className="px-6 py-4 whitespace-nowrap border-b border-gray-300 border-r border-gray-300">
                     {employee.image && (
                       <img
                         src={`http://localhost:5000/api/uploads/${employee.image}`}
@@ -174,15 +174,15 @@ export default function EmployeeList() {
                       />
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">{employee.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">{employee.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">{employee.mobile}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">{employee.designation}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">{employee.gender}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300 border-r border-gray-300">{employee.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300 border-r border-gray-300">{employee.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300 border-r border-gray-300">{employee.mobile}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300 border-r border-gray-300">{employee.designation}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300 border-r border-gray-300">{employee.gender}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300 border-r border-gray-300">
                     {Array.from(new Set(employee.courses.map(course => course.toUpperCase()))).join(', ')}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">{new Date(employee.createDate).toLocaleDateString()}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300 border-r border-gray-300">{new Date(employee.createDate).toLocaleDateString()}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">
                     <button
                       onClick={() => handleEditClick(employee)}

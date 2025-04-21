@@ -47,7 +47,7 @@ const CompanySection = () => {
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex items-center space-x-4 mb-6">
           <img
-            src={companyInfo?.logo}
+            src='/NSTechno.png'
             alt="Company Logo"
             className="h-16 w-16 object-contain"
           />

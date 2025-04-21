@@ -36,6 +36,7 @@ import TeamSection from './dashboard/TeamSection';
 import CompanySection from './dashboard/CompanySection';
 import SettingsSection from './dashboard/SettingsSection';
 import LeaveModal from './dashboard/LeaveModal';
+import LeaveManagement from './dashboard/hr/LeaveManagement';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -123,73 +124,79 @@ const EmployeeDashboard = () => {
   // Add new state for active section
   const [activeSection, setActiveSection] = useState('dashboard');
 
+  // Add new state for leave management
+  const [leaveManagementData, setLeaveManagementData] = useState([]);
+
+  // Add new state for leave management
+  const [showLeaveManagement, setShowLeaveManagement] = useState(false);
+
   // Sidebar navigation items
   const sidebarNavigation = [
-    { 
-      name: 'Dashboard', 
-      icon: ChartBarIcon, 
+    {
+      name: 'Dashboard',
+      icon: ChartBarIcon,
       section: 'dashboard',
-      badge: null 
+      badge: null
     },
-    { 
-      name: 'My Profile', 
-      icon: UserCircleIcon, 
+    {
+      name: 'My Profile',
+      icon: UserCircleIcon,
       section: 'profile',
-      badge: null 
+      badge: null
     },
-    { 
-      name: 'Attendance', 
-      icon: ClockIcon, 
+    {
+      name: 'Attendance',
+      icon: ClockIcon,
       section: 'attendance',
-      badge: null 
+      badge: null
     },
-    { 
-      name: 'Tasks & Projects', 
-      icon: BriefcaseIcon, 
+    {
+      name: 'Tasks & Projects',
+      icon: BriefcaseIcon,
       section: 'tasks',
       badge: tasks?.filter(t => t.status === 'pending').length || null
     },
-    { 
-      name: 'Leave Management', 
-      icon: CalendarIcon, 
+    {
+      name: 'Leave Management',
+      icon: CalendarIcon,
       section: 'leave',
       badge: leaveRequests?.filter(l => l.status === 'pending').length || null
     },
-    { 
-      name: 'Training', 
-      icon: AcademicCapIcon, 
+    {
+      name: 'Training',
+      icon: AcademicCapIcon,
       section: 'training',
-      badge: null 
+      badge: null
     },
-    { 
-      name: 'Documents', 
-      icon: DocumentDuplicateIcon, 
+    {
+      name: 'Documents',
+      icon: DocumentDuplicateIcon,
       section: 'documents',
-      badge: null 
+      badge: null
     },
-    { 
-      name: 'Payroll', 
-      icon: CurrencyDollarIcon, 
+    {
+      name: 'Payroll',
+      icon: CurrencyDollarIcon,
       section: 'payroll',
-      badge: null 
+      badge: null
     },
-    { 
-      name: 'Team', 
-      icon: UsersIcon, 
+    {
+      name: 'Team',
+      icon: UsersIcon,
       section: 'team',
-      badge: null 
+      badge: null
     },
-    { 
-      name: 'Company', 
-      icon: BuildingOfficeIcon, 
+    {
+      name: 'Company',
+      icon: BuildingOfficeIcon,
       section: 'company',
-      badge: null 
+      badge: null
     },
-    { 
-      name: 'Settings', 
-      icon: CogIcon, 
+    {
+      name: 'Settings',
+      icon: CogIcon,
       section: 'settings',
-      badge: null 
+      badge: null
     }
   ];
 
@@ -199,7 +206,7 @@ const EmployeeDashboard = () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const token = localStorage.getItem('token');
         const userId = localStorage.getItem('userId');
 
@@ -210,16 +217,15 @@ const EmployeeDashboard = () => {
         }
 
         const config = {
-          headers: { 
+          headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         };
 
-        // Try to fetch employee data, or use dummy data
+        // Fetch employee data
         try {
-          const employeeResponse = await axios.get(`http://localhost:5000/api/employees/${userId}`, config);
-          // const employeeResponse = await axios.get(`${API_URL}/api/employees/${userId}`, config);
+          const employeeResponse = await axios.get(`${API_URL}/api/employees/${userId}`, config);
           setEmployeeData(employeeResponse.data);
         } catch (error) {
           console.log('Using dummy employee data');
@@ -232,19 +238,18 @@ const EmployeeDashboard = () => {
           });
         }
 
-        // Try to fetch tasks data
+        // Fetch tasks data
         try {
-          const tasksResponse = await axios.get(`http://localhost:5000/api/tasks/employee/${userId}`, config);
-          // const tasksResponse = await axios.get(`${API_URL}/api/tasks/employee/${userId}`, config);
+          const tasksResponse = await axios.get(`${API_URL}/api/tasks/employee/${userId}`, config);
           setTasks(tasksResponse.data || DUMMY_TASKS);
         } catch (error) {
           console.log('Using dummy tasks data');
           setTasks(DUMMY_TASKS);
         }
 
+        // Fetch leave requests and balance
         try {
-          const leavesResponse = await axios.get(`http://localhost:5000/api/leaves/employee/${userId}`, config);
-          // const leavesResponse = await axios.get(`${API_URL}/api/leaves/employee/${userId}`, config);
+          const leavesResponse = await axios.get(`${API_URL}/api/leaves/employee/${userId}`, config);
           setLeaveRequests(leavesResponse.data?.requests || DUMMY_LEAVE_REQUESTS);
           setLeaveBalance(leavesResponse.data?.balance || DUMMY_LEAVE_BALANCE);
         } catch (error) {
@@ -253,15 +258,16 @@ const EmployeeDashboard = () => {
           setLeaveBalance(DUMMY_LEAVE_BALANCE);
         }
 
+        // Fetch attendance data
         try {
-          const attendanceResponse = await axios.get(`http://localhost:5000/api/attendance/employee/${userId}/today`, config);
-          // const attendanceResponse = await axios.get(`${API_URL}/api/attendance/employee/${userId}/today`, config);
+          const attendanceResponse = await axios.get(`${API_URL}/api/attendance/employee/${userId}/today`, config);
           setAttendance(attendanceResponse.data || DUMMY_ATTENDANCE);
         } catch (error) {
           console.log('Attendance data not available:', error.message);
           setAttendance(DUMMY_ATTENDANCE);
         }
 
+        // Fetch payslips data
         try {
           const payslipsResponse = await axios.get(`${API_URL}/api/payslips/employee/${userId}`, config);
           setPayslips(payslipsResponse.data || DUMMY_PAYSLIPS);
@@ -282,6 +288,29 @@ const EmployeeDashboard = () => {
     fetchAllData();
   }, [navigate]);
 
+  // Fetch leave management data
+  useEffect(() => {
+    const fetchLeaveManagementData = async () => {
+      const token = localStorage.getItem('token');
+      const userId = localStorage.getItem('userId');
+
+      if (!token || !userId) return;
+
+      try {
+        const response = await axios.get(`${API_URL}/api/leaves/employee/${userId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        setLeaveManagementData(response.data);
+      } catch (error) {
+        console.error('Error fetching leave management data:', error);
+      }
+    };
+
+    fetchLeaveManagementData();
+  }, []);
+
   // Attendance handlers
   const handleClockInOut = async () => {
     try {
@@ -299,7 +328,7 @@ const EmployeeDashboard = () => {
     try {
       // await axios.patch(`${API_URL}/api/tasks/${taskId}`, { status: newStatus });
       await axios.patch(`http://localhost:5000/api/tasks/${taskId}`, { status: newStatus });
-      const updatedTasks = tasks.map(task => 
+      const updatedTasks = tasks.map(task =>
         task._id === taskId ? { ...task, status: newStatus } : task
       );
       setTasks(updatedTasks);
@@ -363,7 +392,7 @@ const EmployeeDashboard = () => {
         <div className="flex flex-col w-72 bg-white shadow-lg">
           {/* Company Logo */}
           <div className="flex items-center justify-center h-16 px-4 border-b border-gray-200">
-            <img src="/logo.png" alt="Company Logo" className="h-8" />
+            <img src="/NSTechno.png" alt="Company Logo" className="h-8" />
           </div>
 
           {/* User Profile Quick View */}
@@ -401,10 +430,9 @@ const EmployeeDashboard = () => {
                   onClick={() => setActiveSection(item.section)}
                   className={`
                     w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium
-                    ${
-                      activeSection === item.section
-                        ? 'bg-indigo-50 text-indigo-600'
-                        : 'text-gray-700 hover:bg-gray-50'
+                    ${activeSection === item.section
+                      ? 'bg-indigo-50 text-indigo-600'
+                      : 'text-gray-700 hover:bg-gray-50'
                     }
                   `}
                 >
@@ -436,7 +464,7 @@ const EmployeeDashboard = () => {
               <button className="p-2 text-gray-400 hover:text-gray-500">
                 <BellIcon className="h-6 w-6" />
               </button>
-              <button 
+              <button
                 onClick={handleLogout}
                 className="flex items-center text-gray-700 hover:text-gray-900"
               >
@@ -451,7 +479,7 @@ const EmployeeDashboard = () => {
         <main className="p-6">
           {/* Dashboard Overview */}
           {activeSection === 'dashboard' && (
-            <DashboardOverview 
+            <DashboardOverview
               employeeData={employeeData}
               tasks={tasks}
               attendance={attendance}
@@ -462,7 +490,7 @@ const EmployeeDashboard = () => {
 
           {/* Profile Section */}
           {activeSection === 'profile' && (
-            <ProfileSection 
+            <ProfileSection
               employeeData={employeeData}
               updateEmployeeData={setEmployeeData}
             />
@@ -470,7 +498,7 @@ const EmployeeDashboard = () => {
 
           {/* Attendance Section */}
           {activeSection === 'attendance' && (
-            <AttendanceSection 
+            <AttendanceSection
               attendance={attendance}
               clockedIn={clockedIn}
               onClockInOut={handleClockInOut}
@@ -479,19 +507,15 @@ const EmployeeDashboard = () => {
 
           {/* Tasks Section */}
           {activeSection === 'tasks' && (
-            <TasksSection 
+            <TasksSection
               tasks={tasks}
               updateTaskStatus={updateTaskStatus}
             />
           )}
 
-          {/* Leave Section */}
+          {/* Leave Management Section */}
           {activeSection === 'leave' && (
-            <LeaveSection 
-              leaveBalance={leaveBalance}
-              leaveRequests={leaveRequests}
-              onNewRequest={() => setShowLeaveModal(true)}
-            />
+            <LeaveManagement />
           )}
 
           {/* Training Section */}
@@ -506,7 +530,7 @@ const EmployeeDashboard = () => {
 
           {/* Payroll Section */}
           {activeSection === 'payroll' && (
-            <PayrollSection 
+            <PayrollSection
               payslips={payslips}
               selectedMonth={selectedMonth}
               setSelectedMonth={setSelectedMonth}
@@ -532,7 +556,7 @@ const EmployeeDashboard = () => {
 
       {/* Modals */}
       {showLeaveModal && (
-        <LeaveModal 
+        <LeaveModal
           show={showLeaveModal}
           onClose={() => setShowLeaveModal(false)}
           onSubmit={handleLeaveSubmit}

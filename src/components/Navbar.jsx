@@ -11,13 +11,13 @@ export default function Navbar() {
               <Link to="/">
                 <img
                   className="h-12 w-auto"
-                  src="/company-logo.png"
+                  src="/NSTechno.png"
                   alt="Company Logo"
                 />
               </Link>
               {/* Company Name */}
               <span className="ml-3 text-xl font-bold text-gray-800">
-                Your Company Name
+                NS TECHNO.
               </span>
             </div>
           </div>
